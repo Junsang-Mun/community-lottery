@@ -110,6 +110,8 @@
   let busy = false;
   let message = "";
   let zipHelpOpen = false;
+  let invalidBannerDismissed = false;
+  let lastInvalidCount = 0;
 
   function sanitizeFilenameBase(text: string): string {
     return text
@@ -124,6 +126,16 @@
 
   function closeZipHelp() {
     zipHelpOpen = false;
+  }
+
+  $: {
+    const currentInvalidCount = invalidApplicants.length;
+    if (currentInvalidCount === 0) {
+      invalidBannerDismissed = false;
+    } else if (currentInvalidCount !== lastInvalidCount) {
+      invalidBannerDismissed = false;
+    }
+    lastInvalidCount = currentInvalidCount;
   }
 
   function registrationEpoch(v: string | undefined): number {
@@ -212,7 +224,7 @@
     duplicateSelections = new Map();
     duplicateModalOpen = collisions.size > 0;
     if (collisions.size > 0) {
-      message = `중복 의심 ${collisions.size}건 발견: 개인별 처리 후 추첨 가능합니다.`;
+      message = `중복 의심 ${collisions.size}건 발견: 수동 처리 후 추첨 가능합니다.`;
     }
     await rebuildApplicants();
   }
@@ -314,6 +326,17 @@
     }
     if (!excelHash || !applicants.length) {
       message = "엑셀 파일을 먼저 업로드하세요.";
+      return;
+    }
+    if (invalidApplicants.length > 0) {
+      const preview = invalidApplicants
+        .slice(0, 3)
+        .map(
+          (a) =>
+            `행#${a.rowIndex}: ${a.invalidReasons.join(", ") || "필수값 누락"}`,
+        )
+        .join(" / ");
+      message = `필수 항목 누락 행 ${invalidApplicants.length}건이 있어 추첨할 수 없습니다. ${preview}`;
       return;
     }
     if (unresolvedDuplicateCount() > 0) {
@@ -1028,7 +1051,9 @@
           <button
             class="primary"
             on:click={runDraw}
-            disabled={busy}
+            disabled={busy ||
+              invalidApplicants.length > 0 ||
+              unresolvedDuplicateCount() > 0}
             style="flex: 1; padding: 18px; font-size: 1.1rem;"
           >
             <svg
@@ -1179,7 +1204,6 @@
               class="primary"
               type="button"
               on:click={() => (duplicateModalOpen = false)}
-              disabled={unresolvedDuplicateCount() > 0}
             >
               저장 후 닫기
             </button>
@@ -1193,7 +1217,7 @@
         class="card grid animate-fade-in"
         style="background: rgba(52, 199, 89, 0.1); border-color: rgba(52, 199, 89, 0.3); margin-top: 24px;"
       >
-        <h3 style="color: #a3e635;">🎉 추첨 완료 요약 (내부용)</h3>
+        <h3 style="color: #a3e635;">추첨 완료</h3>
         <div
           class="kv"
           style="grid-template-columns: 1fr 1fr; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px;"
@@ -1754,3 +1778,22 @@
     </div>
   {/if}
 </div>
+
+{#if tab === "admin" && invalidApplicants.length > 0 && !invalidBannerDismissed}
+  <div class="invalid-banner animate-fade-in">
+    <div class="invalid-banner__content">
+      <b>필수 항목 누락 경고</b>
+      <span
+        >무효 {invalidApplicants.length}명이 있어 추첨을 실행할 수 없습니다.
+        (필수: 이름, 회원ID, 휴대전화, 우편번호, 주소)</span
+      >
+    </div>
+    <button
+      class="secondary"
+      type="button"
+      on:click={() => (invalidBannerDismissed = true)}
+    >
+      닫기
+    </button>
+  </div>
+{/if}

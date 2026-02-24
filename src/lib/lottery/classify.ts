@@ -10,7 +10,9 @@ export function validateApplicant(row: ApplicantRaw): { valid: boolean; reasons:
   const reasons: string[] = [];
   if (!(row.이름 ?? '').trim()) reasons.push('이름 누락');
   if (!(row.회원ID ?? '').trim()) reasons.push('회원ID 누락');
-  if (!(row.우편번호 ?? '').trim() && !(row.주소 ?? '').trim()) reasons.push('우편번호/주소 누락');
+  if (!(row.휴대전화 ?? '').trim()) reasons.push('휴대전화 누락');
+  if (!(row.우편번호 ?? '').trim()) reasons.push('우편번호 누락');
+  if (!(row.주소 ?? '').trim()) reasons.push('주소 누락');
   return { valid: reasons.length === 0, reasons };
 }
 
