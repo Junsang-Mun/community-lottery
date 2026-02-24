@@ -109,12 +109,21 @@
 
   let busy = false;
   let message = "";
+  let zipHelpOpen = false;
 
   function sanitizeFilenameBase(text: string): string {
     return text
       .trim()
       .replace(/[\\/:*?"<>|]/g, "_")
       .replace(/\s+/g, "_");
+  }
+
+  function toggleZipHelp() {
+    zipHelpOpen = !zipHelpOpen;
+  }
+
+  function closeZipHelp() {
+    zipHelpOpen = false;
   }
 
   function registrationEpoch(v: string | undefined): number {
@@ -625,6 +634,8 @@
   }
 </script>
 
+<svelte:window on:click={closeZipHelp} />
+
 <div class="container animate-fade-in">
   <div class="card" style="margin-bottom: 24px; text-align: center;">
     <h1
@@ -653,7 +664,7 @@
             y2="9"
           /><line x1="9" x2="9" y1="21" y2="9" /></svg
         >
-        대시보드
+        설정
       </button>
       <button class:active={tab === "public"} on:click={() => (tab = "public")}>
         <svg
@@ -713,7 +724,7 @@
           >
           입력 업로드
         </h2>
-        <label style="max-width: 100%; overflow: hidden;">
+        <label style="max-width: 100%; overflow: visible;">
           수강생 엑셀(.xlsx)
           <input
             type="file"
@@ -722,7 +733,7 @@
             on:change={handleExcelUpload}
           />
         </label>
-        <label style="max-width: 100%; overflow: hidden;">
+        <label style="max-width: 100%;">
           강좌명 (감사 보고서 파일명)
           <input
             type="text"
@@ -731,8 +742,28 @@
             style="max-width: 100%;"
           />
         </label>
-        <label style="max-width: 100%; overflow: hidden;">
-          우편번호 매핑(.txt, 파이프 구분)
+        <label style="max-width: 100%;">
+          <span style="display: inline-flex; align-items: center; gap: 8px;">
+            <span>우편번호 매핑</span>
+            <button
+              type="button"
+              class="help-tooltip"
+              class:open={zipHelpOpen}
+              aria-label="우편번호 DB 안내"
+              on:click|stopPropagation={toggleZipHelp}
+            >
+              ⓘ
+              <span class="help-tooltip__bubble">
+                우정사업본부 홈페이지에서 <b><u>지역별 주소 DB</u></b>를
+                다운로드 받아서 업로드해 주세요.
+                <a
+                  href="https://www.epost.go.kr/search/areacd/zipcode_DB.zip"
+                  target="_blank"
+                  rel="noopener noreferrer">바로 다운로드</a
+                >
+              </span>
+            </button>
+          </span>
           <input
             type="file"
             accept=".txt,.csv"
@@ -740,7 +771,7 @@
             on:change={handleZipUpload}
           />
         </label>
-        <label style="max-width: 100%; overflow: hidden;">
+        <label style="max-width: 100%;">
           동 목록 JSON 덮어쓰기 (선택)
           <input
             type="file"
@@ -1242,7 +1273,7 @@
         >
           <h3 style="color: #93c5fd; text-align: center;">고유 시드 해시</h3>
           <p class="small" style="text-align: center; margin-bottom: 16px;">
-            모든 당첨 결과를 재현할 수 있는 수학적 증거입니다.
+            모든 당첨 결과를 재현할 수 있는 값입니다.
           </p>
           <div
             style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; word-break: break-all; font-family: monospace; color: #a78bfa; text-align: center; font-size: 1.1rem; line-height: 1.4;"

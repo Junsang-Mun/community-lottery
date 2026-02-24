@@ -427,6 +427,73 @@ button.danger {
   animation: fadeIn 0.4s ease-out forwards;
 }
 
+.help-tooltip {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  padding: 0;
+  margin: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(147, 197, 253, 0.55);
+  background: rgba(30, 64, 175, 0.35);
+  color: #bfdbfe;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none;
+  transform: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.help-tooltip:hover,
+.help-tooltip:focus {
+  background: rgba(30, 64, 175, 0.55);
+  border-color: rgba(147, 197, 253, 0.85);
+  outline: none;
+  transform: none;
+}
+
+.help-tooltip__bubble {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(340px, calc(100vw - 56px));
+  background: rgba(18, 22, 34, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f8fafc;
+  font-size: 0.83rem;
+  line-height: 1.45;
+  white-space: normal;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.14s ease;
+}
+
+.help-tooltip__bubble a {
+  color: #93c5fd;
+  margin-left: 4px;
+  text-decoration: underline;
+}
+
+.help-tooltip.open .help-tooltip__bubble {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 20px 16px;
