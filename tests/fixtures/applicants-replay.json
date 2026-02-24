@@ -1,0 +1,7 @@
+[
+  { "anonId": "a-1", "selectedDongMatch": true },
+  { "anonId": "a-2", "selectedDongMatch": true },
+  { "anonId": "a-3", "selectedDongMatch": false },
+  { "anonId": "a-4", "selectedDongMatch": true },
+  { "anonId": "a-5", "selectedDongMatch": false }
+]
